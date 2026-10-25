@@ -13,7 +13,7 @@ public class Route {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -30,7 +30,7 @@ public class Route {
     @Column(nullable = false)
     private String projectIdentifier;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
