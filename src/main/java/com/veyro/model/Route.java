@@ -11,6 +11,14 @@ public class Route {
 
     public Route() {}
 
+    public Route(Method method, String path, int status, String body, String projectIdentifier) {
+        this.method = method;
+        this.path = path;
+        this.status = status;
+        this.body = body;
+        this.projectIdentifier = projectIdentifier;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
