@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -25,13 +26,16 @@ public class RouteService {
 
     public RouteResponseDTO createRoute(RouteRequestDTO dto, String projectIdentifier) {
 
-        String path = dto.path().startsWith("/") ? dto.path().toLowerCase().trim() : "/" + dto.path().toLowerCase().trim();
+        String path = dto.path().trim().toLowerCase(Locale.ROOT);
+        String formattedPath = path.startsWith("/") ? path : "/" + path;
 
         if(dto.status() < 100 || dto.status() > 599) {
             throw new InvalidStatusCodeException();
         }
 
-        Optional<Route> existingRoute = routeRepository.findByMethodAndPathAndProjectIdentifier(dto.method(), path, projectIdentifier);
+        String body = dto.body() != null ? dto.body().toString() : null;
+
+        Optional<Route> existingRoute = routeRepository.findByMethodAndPathAndProjectIdentifier(dto.method(), formattedPath, projectIdentifier);
 
         if (existingRoute.isPresent()) {
             throw new RouteAlreadyExistsException();
@@ -40,13 +44,13 @@ public class RouteService {
         Route newRoute = routeRepository.save(
                 new Route(
                         dto.method(),
-                        path,
+                        formattedPath,
                         dto.status(),
-                        dto.body().toString(),
+                        body,
                         projectIdentifier
                 ));
 
-            JsonNode jsonString = mapper.readTree(newRoute.getBody());
+        JsonNode jsonString = newRoute.getBody() != null ? mapper.readTree(newRoute.getBody()) : null;
 
         return new RouteResponseDTO(
                 newRoute.getId(),
