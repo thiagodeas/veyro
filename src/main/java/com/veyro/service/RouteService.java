@@ -29,6 +29,12 @@ public class RouteService {
         String path = dto.path().trim().toLowerCase(Locale.ROOT);
         String formattedPath = path.startsWith("/") ? path : "/" + path;
 
+        formattedPath = formattedPath.replaceAll("/{2,}", "/");
+
+        if (formattedPath.endsWith("/") && formattedPath.length() > 1) {
+            formattedPath = formattedPath.substring(0, formattedPath.length() - 1);
+        }
+
         if(dto.status() < 100 || dto.status() > 599) {
             throw new InvalidStatusCodeException();
         }
